@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Index</title>
+</head>
+<body>
+    {% if request.cookies.get('login') !=  "True"%}
+        {{ redirect("/") }}
+    {% endif %}
+
+    <h1>Hello {{ request.cookies.get('username') }}</h1>
+</body>
+</html>
