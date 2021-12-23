@@ -3,4 +3,4 @@ None
 
 Un outil qui permettra d'administrer son serveur
 
-Fait en python, html, css (pas encore) 
+Fait en python, HTML, CSS (pas encore) avec Flask
