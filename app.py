@@ -88,9 +88,9 @@ def add_user_exec():
             print(passw)
             #passw = hash_perso(passw)
             # ici création de l'utilisateur avec l'input user
-            return "Value:  "+user+" "+passw+" "+permi+"  "
+            return "C'est bon"
         else:
-            return 'Value: '
+            return "C'est pas bon"
 
     elif request.cookies.get("login") != "True":
         return redirect("/")
