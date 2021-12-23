@@ -11,7 +11,6 @@ cur = con.cursor()
 # cur.execute('''CREATE TABLE user (id INTEGER PRIMARY KEY, username text, adresse_email text, password text, id_cookie text)''') #création de la table pour les utilisateur.
 # cur.execute('''INSERT INTO user(username, adresse_email, password) VALUES ("matbe", "degueurce.mathieu@gmail.com", "e9cac7f23c0ff27bb3a4e6e7a4662c01")''')
 print(cur.execute('''SELECT * FROM user''').fetchall())
-print("Valueeeeeeeeeeeeeeeeeeee")
 
 
 def hash_perso(passwordtohash):
@@ -43,14 +42,14 @@ def do_admin_login():
         user = request.form['nm']
         passw = request.form['pw']
         if passw == "" or user == "":
-            return "Merci de remplire tout les champs"
+            return "Merci de remplir tout les champs"
 
         password = hash_perso(passw)
         patate = cur.execute("""SELECT password FROM user WHERE username=?""", [user])
         if str(patate.fetchall()) == [(f'{password}',)]:
             print("Error!")
         else:
-            print('Chuttty grhfeibqthyudfgbtq')
+            print('Error')
 
         resp = make_response(redirect("/"))
         resp.set_cookie("username", user)
@@ -89,13 +88,13 @@ def add_user_exec():
             print(passw)
             #passw = hash_perso(passw)
             # ici création de l'utilisateur avec l'input user
-            return "AHHHHHHHHHHHHHHHHHHHHHHHHH "+user+" "+passw+" "+permi+"  "
+            return "Value:  "+user+" "+passw+" "+permi+"  "
         else:
-            return 'BBBBBBBBBBBBBBBBBBBBBBBBBB'
+            return 'Value: '
 
     elif request.cookies.get("login") != "True":
         return redirect("/")
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port="8080")
+    app.run()
