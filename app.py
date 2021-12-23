@@ -8,8 +8,8 @@ app.secret_key = "886f8b70484617eb26264d2b9c95574b20ccbe864571c22d1a993ef8ed492a
 con = sqlite3.connect('./database.db', check_same_thread=False)
 cur = con.cursor()
 
-# cur.execute('''CREATE TABLE user (id INTEGER PRIMARY KEY, username text, adresse_email text, password text, id_cookie text)''') #création de la table pour les utilisateur.
-# cur.execute('''INSERT INTO user(username, adresse_email, password) VALUES ("matbe", "degueurce.mathieu@gmail.com", "e9cac7f23c0ff27bb3a4e6e7a4662c01")''')
+#cur.execute('''CREATE TABLE user (id INTEGER PRIMARY KEY, username text, adresse_email text, password text, id_cookie text, permission text)''') #création de la table pour les utilisateur.
+#cur.execute('''INSERT INTO user(username, adresse_email, password, permission) VALUES ("matbe", "degueurce.mathieu@gmail.com", "e9cac7f23c0ff27bb3a4e6e7a4662c01", "d259a3dfbd71ec6c5c118abfee72de33")''')
 print(cur.execute('''SELECT * FROM user''').fetchall())
 
 
@@ -45,16 +45,25 @@ def do_admin_login():
             return "Merci de remplir tout les champs"
 
         password = hash_perso(passw)
+
         patate = cur.execute("""SELECT password FROM user WHERE username=?""", [user])
         if str(patate.fetchall()) == [(f'{password}',)]:
             print("Error!")
         else:
             print('Error')
+        perm_allowed = cur.execute("""SELECT permission FROM user WHERE username=?""", [user]).fetchone()
+        perm_allowed1 = str(perm_allowed).replace("[", '')
+        perm_allowed2 = perm_allowed1.replace("(", '')
+        perm_allowed3 = perm_allowed2.replace(")", '')
+        perm_allowed4 = perm_allowed3.replace(")", '')
+        perm_allowed5 = perm_allowed4.replace("'", '')
+        perm_allowed6 = perm_allowed5.replace(",", '')
+        perm_allowed = perm_allowed6
 
         resp = make_response(redirect("/"))
         resp.set_cookie("username", user)
         resp.set_cookie("login", "True")
-        resp.set_cookie("permission", "d259a3dfbd71ec6c5c118abfee72de33")
+        resp.set_cookie("permission", f"{perm_allowed}")
         return resp
     else:
         return "ERROR"
