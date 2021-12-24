@@ -8,8 +8,9 @@ app.secret_key = "886f8b70484617eb26264d2b9c95574b20ccbe864571c22d1a993ef8ed492a
 con = sqlite3.connect('./database.db', check_same_thread=False)
 cur = con.cursor()
 
-#cur.execute('''CREATE TABLE user (id INTEGER PRIMARY KEY, username text, adresse_email text, password text, id_cookie text, permission text)''') #création de la table pour les utilisateur.
-#cur.execute('''INSERT INTO user(username, adresse_email, password, permission) VALUES ("matbe", "degueurce.mathieu@gmail.com", "e9cac7f23c0ff27bb3a4e6e7a4662c01", "d259a3dfbd71ec6c5c118abfee72de33")''')
+# cur.execute('''CREATE TABLE user (id INTEGER PRIMARY KEY, username text, adresse_email text, password text, id_cookie text, permission text)''') #création de la table pour les utilisateur.
+# cur.execute('''INSERT INTO user(username, adresse_email, password, permission) VALUES ("matbe", "degueurce.mathieu@gmail.com", "e9cac7f23c0ff27bb3a4e6e7a4662c01", "d259a3dfbd71ec6c5c118abfee72de33")''')
+con.commit()
 print(cur.execute('''SELECT * FROM user''').fetchall())
 
 
@@ -47,9 +48,11 @@ def do_admin_login():
         password = hash_perso(passw)
 
         patate = cur.execute("""SELECT password FROM user WHERE username=?""", [user])
-        if str(patate.fetchall()) == [(f'{password}',)]:
+        if str(patate.fetchall()) == password:
             print("Error!")
         else:
+            print(patate.fetchall())
+            print(password)
             print('Error')
         perm_allowed = cur.execute("""SELECT permission FROM user WHERE username=?""", [user]).fetchone()
         perm_allowed1 = str(perm_allowed).replace("[", '')
@@ -91,12 +94,14 @@ def add_user_exec():
     if request.cookies.get("login") == "True":
         if request.method == 'POST':
             user = request.form['nm']
+            mail = request.form['em']
             passw = request.form['pw']
             permi = request.form['pm']
 
-            print(passw)
-            #passw = hash_perso(passw)
+            passw = hash_perso(passw)
             # ici création de l'utilisateur avec l'input user
+            cur.execute(f'''INSERT INTO user(username, adresse_email, password, permission) VALUES ("{user}", "{mail}", "{passw}", "d259a3dfbd71ec6c5c118abfee72de33")''')
+            con.commit()
             return "C'est bon"
         else:
             return "C'est pas bon"
@@ -104,6 +109,14 @@ def add_user_exec():
     elif request.cookies.get("login") != "True":
         return redirect("/")
 
+
+@app.route("/admin/show_user")
+def show_user():
+    if request.cookies.get("login") == "True":
+        for row in cur.execute('''SELECT * FROM user ORDER BY id'''):
+            print(row)
+
+        return render_template("admin/show_user.html", cur=cur)
 
 if __name__ == '__main__':
     app.run()
