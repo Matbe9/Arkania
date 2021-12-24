@@ -9,6 +9,7 @@ con = sqlite3.connect('./database.db', check_same_thread=False)
 cur = con.cursor()
 
 # cur.execute('''CREATE TABLE user (id INTEGER PRIMARY KEY, username text, adresse_email text, password text, id_cookie text, permission text)''') #création de la table pour les utilisateur.
+# cur.execute('''CREATE TABLE server (id INTEGER PRIMARY KEY, name text, owner_adresse_email text, user_permission text)''') #création de la table pour les serveurs.
 # cur.execute('''INSERT INTO user(username, adresse_email, password, permission) VALUES ("matbe", "degueurce.mathieu@gmail.com", "e9cac7f23c0ff27bb3a4e6e7a4662c01", "d259a3dfbd71ec6c5c118abfee72de33")''')
 con.commit()
 print(cur.execute('''SELECT * FROM user''').fetchall())
@@ -113,10 +114,15 @@ def add_user_exec():
 @app.route("/admin/show_user")
 def show_user():
     if request.cookies.get("login") == "True":
-        for row in cur.execute('''SELECT * FROM user ORDER BY id'''):
-            print(row)
 
         return render_template("admin/show_user.html", cur=cur)
+
+@app.route("/admin/add_server")
+def add_server():
+    if request.cookies.get("login") == "True":
+        print("logged")
+
+
 
 if __name__ == '__main__':
     app.run()
