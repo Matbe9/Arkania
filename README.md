@@ -1,5 +1,4 @@
 # Fire-Helper
-None
 
 Un outil qui permettra d'administrer son serveur
 
