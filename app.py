@@ -9,6 +9,7 @@ con = sqlite3.connect('./database.db', check_same_thread=False)
 cur = con.cursor()
 
 # cur.execute('''CREATE TABLE user (id INTEGER PRIMARY KEY, username text, adresse_email text, password text, id_cookie text, permission text)''') #création de la table pour les utilisateur.
+# cur.execute('''CREATE TABLE server (id INTEGER PRIMARY KEY, name text, owner_adresse_email text, user_permission text)''') #création de la table pour les serveurs.
 # cur.execute('''INSERT INTO user(username, adresse_email, password, permission) VALUES ("matbe", "degueurce.mathieu@gmail.com", "e9cac7f23c0ff27bb3a4e6e7a4662c01", "d259a3dfbd71ec6c5c118abfee72de33")''')
 con.commit()
 print(cur.execute('''SELECT * FROM user''').fetchall())
@@ -24,7 +25,6 @@ def hash_perso(passwordtohash):
     passww4 = passw4.encode()
     passwfinal = hashlib.md5(passww4).hexdigest()
     return passwfinal
-
 
 # d259a3dfbd71ec6c5c118abfee72de33 = permission admin
 
@@ -113,10 +113,30 @@ def add_user_exec():
 @app.route("/admin/show_user")
 def show_user():
     if request.cookies.get("login") == "True":
-        for row in cur.execute('''SELECT * FROM user ORDER BY id'''):
-            print(row)
 
         return render_template("admin/show_user.html", cur=cur)
+
+@app.route("/admin/add_server", methods=["POST"])
+def add_server():
+    if request.cookies.get("login") == "True":
+        if request.method == 'POST':
+            user = request.form['nm']
+            mail = request.form['em']
+            passw = request.form['pw']
+            permi = request.form['pm']
+
+            passw = hash_perso(passw)
+            # ici création de l'utilisateur avec l'input user
+            cur.execute(f'''INSERT INTO server(name, owner_adresse_email) VALUES ("{user}", "{mail}")''')
+            con.commit()
+            return "C'est bon"
+
+@app.route("/show_server")
+def show_server():
+    if request.cookies.get("login") == "True":
+        return render_template("show_server.html", cur=cur)
+
+
 
 if __name__ == '__main__':
     app.run()
