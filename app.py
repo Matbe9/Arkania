@@ -26,7 +26,6 @@ def hash_perso(passwordtohash):
     passwfinal = hashlib.md5(passww4).hexdigest()
     return passwfinal
 
-
 # d259a3dfbd71ec6c5c118abfee72de33 = permission admin
 
 
@@ -117,10 +116,25 @@ def show_user():
 
         return render_template("admin/show_user.html", cur=cur)
 
-@app.route("/admin/add_server")
+@app.route("/admin/add_server", methods=["POST"])
 def add_server():
     if request.cookies.get("login") == "True":
-        print("logged")
+        if request.method == 'POST':
+            user = request.form['nm']
+            mail = request.form['em']
+            passw = request.form['pw']
+            permi = request.form['pm']
+
+            passw = hash_perso(passw)
+            # ici création de l'utilisateur avec l'input user
+            cur.execute(f'''INSERT INTO server(name, owner_adresse_email) VALUES ("{user}", "{mail}")''')
+            con.commit()
+            return "C'est bon"
+
+@app.route("/show_server")
+def show_server():
+    if request.cookies.get("login") == "True":
+        return render_template("show_server.html", cur=cur)
 
 
 
