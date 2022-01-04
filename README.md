@@ -1,4 +1,4 @@
-# Fire-Helper
+# Arkania
 
 Un outil qui permettra d'administrer son serveur
 
