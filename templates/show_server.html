@@ -5,7 +5,7 @@
     <title>Title</title>
 </head>
 <body>
-    {% set username = request.cookies.get("username") -%}
+    {% set username = request.cookies.get("username") %}
     {% set value1 = cur.execute('''SELECT adresse_email FROM user WHERE username = ?''', username) %}
     {%  for row in cur.execute('''SELECT * FROM server WHERE owner_adresse_email = ?''', value1) %}
         {{ row }}<br>

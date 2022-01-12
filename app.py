@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, redirect, make_response
-import subprocess
 import hashlib
 import sqlite3
 
@@ -8,9 +7,12 @@ app.secret_key = "886f8b70484617eb26264d2b9c95574b20ccbe864571c22d1a993ef8ed492a
 con = sqlite3.connect('./database.db', check_same_thread=False)
 cur = con.cursor()
 
+### Attention! Ces lignes détruise la base de donné!
+# cur.execute('''DROP TABLE user''')
+# cur.execute('''DROP TABLE server''')
 # cur.execute('''CREATE TABLE user (id INTEGER PRIMARY KEY, username text, adresse_email text, password text, id_cookie text, permission text)''') #création de la table pour les utilisateur.
 # cur.execute('''CREATE TABLE server (id INTEGER PRIMARY KEY, name text, owner_adresse_email text, user_permission text)''') #création de la table pour les serveurs.
-# cur.execute('''INSERT INTO user(username, adresse_email, password, permission) VALUES ("matbe", "degueurce.mathieu@gmail.com", "e9cac7f23c0ff27bb3a4e6e7a4662c01", "d259a3dfbd71ec6c5c118abfee72de33")''')
+#cur.execute('''INSERT INTO user(username, adresse_email, password, permission) VALUES ("matbe2", "test2@test.test", "d259a3dfbd71ec6c5c118abfee72de33", "e9cac7f23c0ff27bb3a4e6e7a4662c01")''')
 con.commit()
 print(cur.execute('''SELECT * FROM user''').fetchall())
 
@@ -32,13 +34,13 @@ def hash_perso(passwordtohash):
 @app.route('/')
 def home():  # put application's code here
     if request.cookies.get('login') == "True":
-        return render_template("index.html")
+        return render_template("index.html", cur=cur, str=str)
     else:
         return render_template("login.html")
 
 
 @app.route('/login', methods=['POST'])
-def do_admin_login():
+def admin_login():
     if request.method == 'POST':
         user = request.form['nm']
         passw = request.form['pw']
@@ -47,9 +49,10 @@ def do_admin_login():
 
         password = hash_perso(passw)
 
-        patate = cur.execute("""SELECT password FROM user WHERE username=?""", [user])
-        if str(patate.fetchall()) == password:
-            print("Error!")
+        #patate = cur.execute("""SELECT password FROM user WHERE username=?""", [user])
+        patate = cur.execute("""SELECT username FROM user WHERE password=?""", [password])
+        if str(patate.fetchall()) == str(password):
+            print("Patate")
         else:
             print(patate.fetchall())
             print(password)
@@ -131,10 +134,11 @@ def add_server():
             con.commit()
             return "C'est bon"
 
-@app.route("/show_server")
+@app.route("/admin/show_server")
 def show_server():
     if request.cookies.get("login") == "True":
-        return render_template("show_server.html", cur=cur)
+        return redirect("/")
+        #return render_template("show_server.html", cur=cur)
 
 
 
