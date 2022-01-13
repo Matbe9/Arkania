@@ -102,7 +102,7 @@ def add_user_exec():
 
             passw = hash_perso(passw)
             # ici création de l'utilisateur avec l'input user
-            cur.execute(f'''INSERT INTO user(username, adresse_email, password, permission) VALUES ("{user}", "{mail}", "{passw}", "d259a3dfbd71ec6c5c118abfee72de33")''')
+            cur.execute(f'''INSERT INTO user(username, adresse_email, password, permission) VALUES (%s, %s, %s, "d259a3dfbd71ec6c5c118abfee72de33")''', user, mail, passw)
             con.commit()
             return "C'est bon"
         else:
