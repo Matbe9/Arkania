@@ -12,7 +12,7 @@ cur = con.cursor()
 # cur.execute('''DROP TABLE server''')
 # cur.execute('''CREATE TABLE user (id INTEGER PRIMARY KEY, username text, adresse_email text, password text, id_cookie text, permission text)''') #création de la table pour les utilisateur.
 # cur.execute('''CREATE TABLE server (id INTEGER PRIMARY KEY, name text, owner_adresse_email text, user_permission text)''') #création de la table pour les serveurs.
-#cur.execute('''INSERT INTO user(username, adresse_email, password, permission) VALUES ("matbe2", "test2@test.test", "d259a3dfbd71ec6c5c118abfee72de33", "e9cac7f23c0ff27bb3a4e6e7a4662c01")''')
+# cur.execute('''INSERT INTO user(username, adresse_email, password, permission) VALUES ("matbe2", "test2@test.test", "d259a3dfbd71ec6c5c118abfee72de33", "e9cac7f23c0ff27bb3a4e6e7a4662c01")''')
 con.commit()
 print(cur.execute('''SELECT * FROM user''').fetchall())
 
@@ -55,7 +55,6 @@ def admin_login():
             print("Patate")
         else:
             print(patate.fetchall())
-            print(password)
             print('Error')
         perm_allowed = cur.execute("""SELECT permission FROM user WHERE username=?""", [user]).fetchone()
         perm_allowed1 = str(perm_allowed).replace("[", '')
@@ -130,7 +129,7 @@ def add_server():
 
             passw = hash_perso(passw)
             # ici création de l'utilisateur avec l'input user
-            cur.execute(f'''INSERT INTO server(name, owner_adresse_email) VALUES ("{user}", "{mail}")''')
+            cur.execute('''INSERT INTO server(name, owner_adresse_email) VALUES (%s, %s)''', user, mail)
             con.commit()
             return "C'est bon"
 
