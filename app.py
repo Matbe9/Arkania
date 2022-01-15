@@ -7,7 +7,7 @@ app.secret_key = "886f8b70484617eb26264d2b9c95574b20ccbe864571c22d1a993ef8ed492a
 con = sqlite3.connect('./database.db', check_same_thread=False)
 cur = con.cursor()
 
-### Attention! Ces lignes détruise la base de donné!
+"""Attention! Ces lignes détruise la base de donné!"""
 # cur.execute('''DROP TABLE user''')
 # cur.execute('''DROP TABLE server''')
 # cur.execute('''CREATE TABLE user (id INTEGER PRIMARY KEY, username text, adresse_email text, password text, id_cookie text, permission text)''') #création de la table pour les utilisateur.
@@ -19,14 +19,14 @@ print(cur.execute('''SELECT * FROM user''').fetchall())
 
 def hash_perso(passwordtohash):
     passww = passwordtohash.encode()
-    passw2 = hashlib.md5(passww).hexdigest()
-    passww2 = passw2.encode()
-    passw3 = hashlib.sha256(passww2).hexdigest()
-    passww3 = passw3.encode()
-    passw4 = hashlib.sha512(passww3).hexdigest()
-    passww4 = passw4.encode()
-    passwfinal = hashlib.md5(passww4).hexdigest()
-    return passwfinal
+    passww = hashlib.md5(passww).hexdigest()
+    passww = passww.encode()
+    passww = hashlib.sha256(passww).hexdigest()
+    passww = passww.encode()
+    passww = hashlib.sha512(passww).hexdigest()
+    passww = passww.encode()
+    passww = hashlib.md5(passww).hexdigest()
+    return passww
 
 # d259a3dfbd71ec6c5c118abfee72de33 = permission admin
 
@@ -48,7 +48,6 @@ def admin_login():
             return "Merci de remplir tout les champs"
 
         password = hash_perso(passw)
-
         #patate = cur.execute("""SELECT password FROM user WHERE username=?""", [user])
         patate = cur.execute("""SELECT username FROM user WHERE password=?""", [password])
         if str(patate.fetchall()) == str(password):
@@ -138,7 +137,6 @@ def show_server():
     if request.cookies.get("login") == "True":
         return redirect("/")
         #return render_template("show_server.html", cur=cur)
-
 
 
 if __name__ == '__main__':
