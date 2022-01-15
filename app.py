@@ -84,8 +84,8 @@ def logout():
 @app.route("/admin/")
 def show_server():
     if request.cookies.get("login") == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
-        return redirect("/")
-        #return render_template("show_server.html", cur=cur)
+        return render_template("admin/admin_index.html", cur=cur, str=str)
+    return redirect("/")
 
 @app.route("/admin/add_user")
 def add_user_page():
@@ -111,15 +111,15 @@ def add_user_exec():
         else:
             return "C'est pas bon"
 
-    elif request.cookies.get("login") != "True":
-        return redirect("/")
+    return redirect("/")
 
 
 @app.route("/admin/show_user")
 def show_user():
     if request.cookies.get("login") == "True"  and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
-
         return render_template("admin/show_user.html", cur=cur)
+
+    return redirect("/")
 
 @app.route("/admin/add_server", methods=["POST"])
 def add_server():
@@ -136,11 +136,15 @@ def add_server():
             con.commit()
             return "C'est bon"
 
+    return redirect("/")
+
 @app.route("/admin/show_server")
-def show_server():
+def admin_show_server():
     if request.cookies.get("login") == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
-        return redirect("/")
+        return redirect("/admin/")
         #return render_template("show_server.html", cur=cur)
+
+    return redirect("/")
 
 
 if __name__ == '__main__':
