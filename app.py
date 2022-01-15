@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, make_response
+from markupsafe import escape
 import hashlib
 import sqlite3
 
@@ -42,7 +43,84 @@ def home():  # put application's code here
         return render_template("login.html")
 
 
-@app.route('/login', methods=['POST'])
+@app.route("/logout")
+def logout():
+    resp = make_response(redirect("/"))
+    resp.delete_cookie("login")
+    resp.delete_cookie("permission")
+    resp.delete_cookie("username")
+    return resp
+
+
+@app.route("/admin/")
+def admin_index():
+    if request.cookies.get("login") == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
+        return render_template("admin/admin_index.html", cur=cur, str=str)
+    return redirect("/")
+
+@app.route("/admin/add_user")
+def add_user_page():
+    if request.cookies.get("login") == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
+        return render_template("admin/adduser.html")
+
+    return redirect("/")
+
+@app.route("/admin/show_user")
+def show_user():
+    if request.cookies.get("login") == "True"  and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
+        return render_template("admin/show_user.html", cur=cur)
+
+    return redirect("/")
+
+
+
+@app.route("/admin/show_server")
+def admin_show_server():
+    if request.cookies.get("login") == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
+        return redirect("/admin/")
+        #return render_template("show_server.html", cur=cur)
+
+    return redirect("/")
+
+
+@app.route("/admin/delete_user")
+def delete_user():
+    if request.cookies.get("login") == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
+        return redirect("/admin/")
+        #return render_template("show_server.html", cur=cur)
+
+    return redirect("/")
+
+########################################################################################################################
+###                                                  A.P.I                                                           ###
+########################################################################################################################
+
+@app.route("/api/v1/delete_user/<username_to_delete>")
+def delete_user_api(username_to_delete):
+    """Cette endpoint est à utiliser avec les valeurs dans l'url."""
+    if request.cookies.get("login") == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33" and username_to_delete is not False:
+        sql = "DELETE FROM user WHERE username = ?"
+        cur.execute(sql, (escape(username_to_delete),))
+        con.commit()
+
+@app.route("/api/v1/add_server", methods=["POST"])
+def add_server():
+    if request.cookies.get("login") == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
+        if request.method == 'POST':
+            user = request.form['nm']
+            mail = request.form['em']
+            passw = request.form['pw']
+            permi = request.form['pm']
+
+            passw = hash_perso(passw)
+            # ici création de l'utilisateur avec l'input user
+            cur.execute('''INSERT INTO server(name, owner_adresse_email) VALUES (%s, %s)''', user, mail)
+            con.commit()
+            return "C'est bon"
+
+    return redirect("/")
+
+@app.route('/api/v1/login', methods=['POST'])
 def login():
     if request.method == 'POST':
         user = request.form['nm']
@@ -71,29 +149,6 @@ def login():
     else:
         return "ERROR"
 
-
-@app.route("/logout")
-def logout():
-    resp = make_response(redirect("/"))
-    resp.delete_cookie("login")
-    resp.delete_cookie("permission")
-    resp.delete_cookie("username")
-    return resp
-
-
-@app.route("/admin/")
-def show_server():
-    if request.cookies.get("login") == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
-        return render_template("admin/admin_index.html", cur=cur, str=str)
-    return redirect("/")
-
-@app.route("/admin/add_user")
-def add_user_page():
-    if request.cookies.get("login") == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
-        return render_template("admin/adduser.html")
-
-    return redirect("/")
-
 @app.route("/admin/add_user_exec", methods=['POST'])
 def add_user_exec():
     if request.cookies.get("login") == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
@@ -105,47 +160,13 @@ def add_user_exec():
 
             passw = hash_perso(passw)
             # ici création de l'utilisateur avec l'input user
-            cur.execute(f'''INSERT INTO user(username, adresse_email, password, permission) VALUES (%s, %s, %s, "d259a3dfbd71ec6c5c118abfee72de33")''', user, mail, passw)
+            cur.execute(f'''INSERT INTO user(username, adresse_email, password, permission) VALUES (%s, %s, %s, "d259a3dfbd71ec6c5c118abfee72de33")''',(user, mail, passw))
             con.commit()
             return "C'est bon"
         else:
             return "C'est pas bon"
 
     return redirect("/")
-
-
-@app.route("/admin/show_user")
-def show_user():
-    if request.cookies.get("login") == "True"  and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
-        return render_template("admin/show_user.html", cur=cur)
-
-    return redirect("/")
-
-@app.route("/admin/add_server", methods=["POST"])
-def add_server():
-    if request.cookies.get("login") == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
-        if request.method == 'POST':
-            user = request.form['nm']
-            mail = request.form['em']
-            passw = request.form['pw']
-            permi = request.form['pm']
-
-            passw = hash_perso(passw)
-            # ici création de l'utilisateur avec l'input user
-            cur.execute('''INSERT INTO server(name, owner_adresse_email) VALUES (%s, %s)''', user, mail)
-            con.commit()
-            return "C'est bon"
-
-    return redirect("/")
-
-@app.route("/admin/show_server")
-def admin_show_server():
-    if request.cookies.get("login") == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
-        return redirect("/admin/")
-        #return render_template("show_server.html", cur=cur)
-
-    return redirect("/")
-
 
 if __name__ == '__main__':
     app.run()
