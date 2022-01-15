@@ -14,7 +14,6 @@ cur = con.cursor()
 # cur.execute('''CREATE TABLE server (id INTEGER PRIMARY KEY, name text, owner_adresse_email text, user_permission text)''') #création de la table pour les serveurs.
 # cur.execute('''INSERT INTO user(username, adresse_email, password, permission) VALUES ("matbe2", "test2@test.test", "d259a3dfbd71ec6c5c118abfee72de33", "e9cac7f23c0ff27bb3a4e6e7a4662c01")''')
 con.commit()
-print(cur.execute('''SELECT * FROM user''').fetchall())
 
 
 def hash_perso(passwordtohash):
@@ -50,11 +49,7 @@ def admin_login():
         password = hash_perso(passw)
         #patate = cur.execute("""SELECT password FROM user WHERE username=?""", [user])
         patate = cur.execute("""SELECT username FROM user WHERE password=?""", [password])
-        if str(patate.fetchall()) == str(password):
-            print("Patate")
-        else:
-            print(patate.fetchall())
-            print('Error')
+
         perm_allowed = cur.execute("""SELECT permission FROM user WHERE username=?""", [user]).fetchone()
         perm_allowed1 = str(perm_allowed).replace("[", '')
         perm_allowed2 = perm_allowed1.replace("(", '')
