@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Index</title>
+</head>
+<body>
+    {% if request.cookies.get('login') !=  "True"%}
+        {{ redirect("/") }}
+    {% endif %}
+
+    <h1>Hello {{ request.cookies.get('username') }}</h1>
+
+    {%  for user in cur.execute('''SELECT username FROM user ORDER BY id''') %}
+        {% set user = str(user) %}
+        {% set user = str(user).replace("(", '') %}
+        {% set user = user.replace(")", '') %}
+        {% set user = user.replace("'", '') %}
+        {% set user = user.replace(",", '') %}
+        <a>{{ user }}</a><br>
+    {% endfor %}
+</body>
+</html>

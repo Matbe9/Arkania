@@ -12,6 +12,8 @@ cur = con.cursor()
 # cur.execute('''DROP TABLE server''')
 # cur.execute('''CREATE TABLE user (id INTEGER PRIMARY KEY, username text, adresse_email text, password text, id_cookie text, permission text)''') #création de la table pour les utilisateur.
 # cur.execute('''CREATE TABLE server (id INTEGER PRIMARY KEY, name text, owner_adresse_email text, user_permission text)''') #création de la table pour les serveurs.
+# cur.execute('''CREATE TABLE permission (id INTEGER PRIMARY KEY, name text, allowed_to text)''') #création de la table pour les permissions.
+# cur.execute('''INSERT INTO permission(name, allowed_to) VALUES ("admin","all")''')
 # cur.execute('''INSERT INTO user(username, adresse_email, password, permission) VALUES ("matbe2", "test2@test.test", "d259a3dfbd71ec6c5c118abfee72de33", "e9cac7f23c0ff27bb3a4e6e7a4662c01")''')
 con.commit()
 
@@ -34,12 +36,14 @@ def hash_perso(passwordtohash):
 def home():  # put application's code here
     if request.cookies.get('login') == "True":
         return render_template("index.html", cur=cur, str=str)
+    elif request.cookies.get('login') == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
+        return redirect("/admin/")
     else:
         return render_template("login.html")
 
 
 @app.route('/login', methods=['POST'])
-def admin_login():
+def login():
     if request.method == 'POST':
         user = request.form['nm']
         passw = request.form['pw']
@@ -77,17 +81,22 @@ def logout():
     return resp
 
 
+@app.route("/admin/")
+def show_server():
+    if request.cookies.get("login") == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
+        return render_template("admin/admin_index.html", cur=cur, str=str)
+    return redirect("/")
+
 @app.route("/admin/add_user")
 def add_user_page():
-    if request.cookies.get("login") != "True":
-        return redirect("/")
+    if request.cookies.get("login") == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
+        return render_template("admin/adduser.html")
 
-    return render_template("admin/adduser.html")
-
+    return redirect("/")
 
 @app.route("/admin/add_user_exec", methods=['POST'])
 def add_user_exec():
-    if request.cookies.get("login") == "True":
+    if request.cookies.get("login") == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
         if request.method == 'POST':
             user = request.form['nm']
             mail = request.form['em']
@@ -102,19 +111,19 @@ def add_user_exec():
         else:
             return "C'est pas bon"
 
-    elif request.cookies.get("login") != "True":
-        return redirect("/")
+    return redirect("/")
 
 
 @app.route("/admin/show_user")
 def show_user():
-    if request.cookies.get("login") == "True":
-
+    if request.cookies.get("login") == "True"  and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
         return render_template("admin/show_user.html", cur=cur)
+
+    return redirect("/")
 
 @app.route("/admin/add_server", methods=["POST"])
 def add_server():
-    if request.cookies.get("login") == "True":
+    if request.cookies.get("login") == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
         if request.method == 'POST':
             user = request.form['nm']
             mail = request.form['em']
@@ -127,11 +136,15 @@ def add_server():
             con.commit()
             return "C'est bon"
 
+    return redirect("/")
+
 @app.route("/admin/show_server")
-def show_server():
-    if request.cookies.get("login") == "True":
-        return redirect("/")
+def admin_show_server():
+    if request.cookies.get("login") == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
+        return redirect("/admin/")
         #return render_template("show_server.html", cur=cur)
+
+    return redirect("/")
 
 
 if __name__ == '__main__':
