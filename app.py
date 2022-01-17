@@ -129,17 +129,23 @@ def login():
             return "Merci de remplir tout les champs"
 
         password = hash_perso(passw)
-        #patate = cur.execute("""SELECT password FROM user WHERE username=?""", [user])
-        patate = cur.execute("""SELECT username FROM user WHERE password=?""", [password])
+        check_password_level1 = cur.execute(f"""SELECT password FROM user WHERE username="{user}" """)
+        check_password_level2 = cur.execute(f"""SELECT username FROM user WHERE password="{password}" """)
+
+        print(check_password_level1.fetchone())
+        print(check_password_level2.fetchone())
+
+        if check_password_level1.fetchone() is None or check_password_level2.fetchone() is None:
+            return "Vous n'êtes pas référencé dans notre base de donnée"
 
         perm_allowed = cur.execute("""SELECT permission FROM user WHERE username=?""", [user]).fetchone()
-        perm_allowed1 = str(perm_allowed).replace("[", '')
-        perm_allowed2 = perm_allowed1.replace("(", '')
-        perm_allowed3 = perm_allowed2.replace(")", '')
-        perm_allowed4 = perm_allowed3.replace(")", '')
-        perm_allowed5 = perm_allowed4.replace("'", '')
-        perm_allowed6 = perm_allowed5.replace(",", '')
-        perm_allowed = perm_allowed6
+        perm_allowed = str(perm_allowed).replace("[", '')
+        perm_allowed = perm_allowed.replace("(", '')
+        perm_allowed = perm_allowed.replace(")", '')
+        perm_allowed = perm_allowed.replace(")", '')
+        perm_allowed = perm_allowed.replace("'", '')
+        perm_allowed = perm_allowed.replace(",", '')
+        perm_allowed = perm_allowed
 
         resp = make_response(redirect("/"))
         resp.set_cookie("username", user)
