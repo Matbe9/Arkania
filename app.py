@@ -7,6 +7,7 @@ app = Flask(__name__)
 app.secret_key = "886f8b70484617eb26264d2b9c95574b20ccbe864571c22d1a993ef8ed492a383afde51fdaf18ba79f899581f0b730d9"
 con = sqlite3.connect('./database.db', check_same_thread=False)
 cur = con.cursor()
+ip = "192.168.1.105"
 
 """Attention! Ces lignes détruise la base de donné!"""
 # cur.execute('''DROP TABLE user''')
@@ -36,7 +37,7 @@ def hash_perso(passwordtohash):
 @app.route('/')
 def home():  # put application's code here
     if request.cookies.get('login') == "True":
-        return render_template("index.html", cur=cur, str=str)
+        return render_template("index.html", cur=cur, str=str, ip=ip)
     elif request.cookies.get('login') == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
         return redirect("/admin/")
     else:
@@ -55,7 +56,7 @@ def logout():
 @app.route("/admin/")
 def admin_index():
     if request.cookies.get("login") == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
-        return render_template("admin/admin_index.html", cur=cur, str=str)
+        return render_template("admin/admin_index.html", cur=cur, str=str, ip=ip)
     return redirect("/")
 
 @app.route("/admin/add_user")
@@ -68,7 +69,7 @@ def add_user_page():
 @app.route("/admin/show_user")
 def show_user():
     if request.cookies.get("login") == "True"  and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
-        return render_template("admin/show_user.html", cur=cur)
+        return render_template("admin/show_user.html", cur=cur, ip=ip)
 
     return redirect("/")
 
@@ -129,22 +130,19 @@ def login():
             return "Merci de remplir tout les champs"
 
         password = hash_perso(passw)
-        check_password_level1 = cur.execute(f"""SELECT * FROM user WHERE username="{user}" """)
+        check_password_level1 = cur.execute(f"""SELECT password FROM user WHERE username="{user}" """)
 
-        print(str(check_password_level1.fetchone()) + " 1")
+        check_password = str(check_password_level1.fetchone()).replace("(", '')
+        check_password = check_password.replace(")", '')
+        check_password = check_password.replace(")", '')
+        check_password = check_password.replace("'", '')
+        check_password = check_password.replace(",", '')
 
-        if check_password_level1.fetchone() is None:
+        if check_password != password:
             return "Vous n'êtes pas référencé dans notre base de donnée"
 
         perm_allowed = cur.execute(f"""SELECT permission FROM user WHERE username="{user}" """).fetchone()
         print(perm_allowed)
-        """perm_allowed = str(perm_allowed).replace("[", '')
-        perm_allowed = perm_allowed.replace("(", '')
-        perm_allowed = perm_allowed.replace(")", '')
-        perm_allowed = perm_allowed.replace(")", '')
-        perm_allowed = perm_allowed.replace("'", '')
-        perm_allowed = perm_allowed.replace(",", '')
-        perm_allowed = perm_allowed"""
 
         resp = make_response(redirect("/"))
         resp.set_cookie("username", user)
@@ -174,4 +172,4 @@ def add_user_exec():
     return redirect("/")
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host="0.0.0.0")
