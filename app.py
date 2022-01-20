@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, make_response
+from flask import Flask, render_template, request, redirect, make_response, send_from_directory
 from markupsafe import escape
 import hashlib
 import sqlite3
@@ -8,15 +8,18 @@ app.secret_key = "886f8b70484617eb26264d2b9c95574b20ccbe864571c22d1a993ef8ed492a
 con = sqlite3.connect('./database.db', check_same_thread=False)
 cur = con.cursor()
 
+
 """Attention! Ces lignes détruise la base de donné!"""
-# cur.execute('''DROP TABLE user''')
-# cur.execute('''DROP TABLE server''')
-# cur.execute('''CREATE TABLE user (id INTEGER PRIMARY KEY, username text, adresse_email text, password text, id_cookie text, permission text)''') #création de la table pour les utilisateur.
-# cur.execute('''CREATE TABLE server (id INTEGER PRIMARY KEY, name text, owner_adresse_email text, user_permission text)''') #création de la table pour les serveurs.
-# cur.execute('''CREATE TABLE permission (id INTEGER PRIMARY KEY, name text, allowed_to text)''') #création de la table pour les permissions.
-# cur.execute('''INSERT INTO permission(name, allowed_to) VALUES ("admin","all")''')
-# cur.execute('''INSERT INTO user(username, adresse_email, password, permission) VALUES ("matbe2", "test2@test.test", "d259a3dfbd71ec6c5c118abfee72de33", "e9cac7f23c0ff27bb3a4e6e7a4662c01")''')
+""""
+cur.execute('''DROP TABLE user''')
+cur.execute('''DROP TABLE server''')
+cur.execute('''CREATE TABLE user (id INTEGER PRIMARY KEY, username text, adresse_email text, password text, id_cookie text, permission text)''') #création de la table pour les utilisateur.
+cur.execute('''CREATE TABLE server (id INTEGER PRIMARY KEY, name text, owner_adresse_email text, user_permission text)''') #création de la table pour les serveurs.
+cur.execute('''CREATE TABLE permission (id INTEGER PRIMARY KEY, name text, allowed_to text)''') #création de la table pour les permissions.
+cur.execute('''INSERT INTO permission(name, allowed_to) VALUES ("admin","all")''')
+cur.execute('''INSERT INTO user(username, adresse_email, password, permission) VALUES ("timtonix", "test2@test.test", "ae077ca98eb2cfe8d4e90b84d43e907b", "e9cac7f23c0ff27bb3a4e6e7a4662c01")''')
 con.commit()
+"""
 
 
 def hash_perso(passwordtohash):
@@ -31,6 +34,10 @@ def hash_perso(passwordtohash):
     return passww
 
 # d259a3dfbd71ec6c5c118abfee72de33 = permission admin
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory('favicon.ico')
 
 
 @app.route('/')
@@ -125,29 +132,31 @@ def login():
     if request.method == 'POST':
         user = request.form['nm']
         passw = request.form['pw']
+
         if passw == "" or user == "":
             return "Merci de remplir tout les champs"
 
         password = hash_perso(passw)
-        check_password_level1 = cur.execute(f"""SELECT password FROM user WHERE username="{user}" """)
+        check_user = cur.execute(f"""SELECT * FROM user WHERE username="{user}" """)
 
-        check_password = str(check_password_level1.fetchone()).replace("(", '')
-        check_password = check_password.replace(")", '')
-        check_password = check_password.replace(")", '')
-        check_password = check_password.replace("'", '')
-        check_password = check_password.replace(",", '')
+        row = check_user.fetchone()
 
-        if check_password != password:
-            return "Vous n'êtes pas référencé dans notre base de donnée"
+        while row is not None:
+            if row[1] != user:
+                return "Vous n'êtes pas référencé dans notre base de donnée"
+            else:
+                if row[3] != password:
+                    return "Erreur de mots de passe"
+                else:
+                    perm_allowed = cur.execute(f"""SELECT permission FROM user WHERE username="{user}" """).fetchone()
+                    print(perm_allowed)
 
-        perm_allowed = cur.execute(f"""SELECT permission FROM user WHERE username="{user}" """).fetchone()
-        print(perm_allowed)
 
-        resp = make_response(redirect("/"))
-        resp.set_cookie("username", user)
-        resp.set_cookie("login", "True")
-        resp.set_cookie("permission", f"{perm_allowed}")
-        return resp
+                    resp = make_response(redirect("/"))
+                    resp.set_cookie("username", user)
+                    resp.set_cookie("login", "True")
+                    resp.set_cookie("permission", f"{perm_allowed}")
+                    return resp
     else:
         return "ERROR"
 
