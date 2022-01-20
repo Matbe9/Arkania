@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, make_response, send_from_directory
+from flask import Flask, render_template, request, redirect, make_response
 from markupsafe import escape
 import hashlib
 import sqlite3
@@ -7,7 +7,6 @@ app = Flask(__name__)
 app.secret_key = "886f8b70484617eb26264d2b9c95574b20ccbe864571c22d1a993ef8ed492a383afde51fdaf18ba79f899581f0b730d9"
 con = sqlite3.connect('./database.db', check_same_thread=False)
 cur = con.cursor()
-
 
 """Attention! Ces lignes détruise la base de donné!"""
 """"
@@ -34,10 +33,6 @@ def hash_perso(passwordtohash):
     return passww
 
 # d259a3dfbd71ec6c5c118abfee72de33 = permission admin
-
-@app.route('/favicon.ico')
-def favicon():
-    return send_from_directory('favicon.ico')
 
 
 @app.route('/')
