@@ -138,7 +138,7 @@ def login():
 
         while row is not None:
             if row[1] != user:
-                return "Vous n'êtes pas référencé dans notre base de donnée"
+                return "Erreur avec le login"
             else:
                 if row[3] == password:
                     perm_allowed = cur.execute(f"""SELECT permission FROM user WHERE username="{user}" """).fetchone()
@@ -158,6 +158,7 @@ def login():
                     return resp
                 else:
                     return "Mauvais mot de passe"
+        return "Erreur, vous n'êtes pas référencé dans la base de donnée..."
     else:
         return "ERROR"
 
