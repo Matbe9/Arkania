@@ -16,7 +16,7 @@ cur.execute('''CREATE TABLE user (id INTEGER PRIMARY KEY, username text, adresse
 cur.execute('''CREATE TABLE server (id INTEGER PRIMARY KEY, name text, owner_adresse_email text, user_permission text)''') #création de la table pour les serveurs.
 cur.execute('''CREATE TABLE permission (id INTEGER PRIMARY KEY, name text, allowed_to text)''') #création de la table pour les permissions.
 cur.execute('''INSERT INTO permission(name, allowed_to) VALUES ("admin","all")''')
-cur.execute('''INSERT INTO user(username, adresse_email, password, permission) VALUES ("timtonix", "test2@test.test", "ae077ca98eb2cfe8d4e90b84d43e907b", "e9cac7f23c0ff27bb3a4e6e7a4662c01")''')
+cur.execute('''INSERT INTO user(username, adresse_email, password, permission) VALUES ("admin", "test2@test.test", "ae077ca98eb2cfe8d4e90b84d43e907b", "d259a3dfbd71ec6c5c118abfee72de33")''')
 con.commit()
 """
 
@@ -140,21 +140,24 @@ def login():
             if row[1] != user:
                 return "Vous n'êtes pas référencé dans notre base de donnée"
             else:
-                perm_allowed = cur.execute(f"""SELECT permission FROM user WHERE username="{user}" """).fetchone()
-                print(perm_allowed)
-                """perm_allowed = str(perm_allowed).replace("[", '')
-                perm_allowed = perm_allowed.replace("(", '')
-                perm_allowed = perm_allowed.replace(")", '')
-                perm_allowed = perm_allowed.replace(")", '')
-                perm_allowed = perm_allowed.replace("'", '')
-                perm_allowed = perm_allowed.replace(",", '')
-                perm_allowed = perm_allowed"""
+                if row[3] == password:
+                    perm_allowed = cur.execute(f"""SELECT permission FROM user WHERE username="{user}" """).fetchone()
+                    print(perm_allowed)
+                    """perm_allowed = str(perm_allowed).replace("[", '')
+                    perm_allowed = perm_allowed.replace("(", '')
+                    perm_allowed = perm_allowed.replace(")", '')
+                    perm_allowed = perm_allowed.replace(")", '')
+                    perm_allowed = perm_allowed.replace("'", '')
+                    perm_allowed = perm_allowed.replace(",", '')
+                    perm_allowed = perm_allowed"""
 
-                resp = make_response(redirect("/"))
-                resp.set_cookie("username", user)
-                resp.set_cookie("login", "True")
-                resp.set_cookie("permission", f"{perm_allowed}")
-                return resp
+                    resp = make_response(redirect("/"))
+                    resp.set_cookie("username", user)
+                    resp.set_cookie("login", "True")
+                    resp.set_cookie("permission", f"{perm_allowed}")
+                    return resp
+                else:
+                    return "Mauvais mot de passe"
     else:
         return "ERROR"
 
