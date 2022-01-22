@@ -17,6 +17,9 @@ def hash_perso(passwordtohash):
     passww = hashlib.md5(passww).hexdigest()
     return passww
 
+if os.system("groups") != "root":
+    exit("L'installation doit être fait en root!")
+
 print("Bienvenue dans l'installation d'Arkania!")
 
 os.system("git clone https://github.com/Matbe9/Arkania.git")
@@ -32,9 +35,9 @@ while not conf1:
     print("Nous allons donc créer un premier compte administrateur.")
     username = input("    Nom d'utilisateur: ")
     email = input("    Adresse e-mail: ")
-    while mdp1 != mdp2:
-        mdp1 = input("    Mot de passe: ")
-        mdp2 = input("    Confirmation du mot de passe: ")
+
+    mdp1 = input("    Mot de passe: ")
+    mdp2 = input("    Confirmation du mot de passe: ")
     confirm = input("Confirmez vous les données ci-dessus? ")
     if confirm == "yes" or confirm == "oui" or confirm == "y" or confirm == "o":
         conf1 = True
