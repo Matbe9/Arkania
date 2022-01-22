@@ -142,14 +142,7 @@ def login():
             else:
                 if row[3] == password:
                     perm_allowed = cur.execute(f"""SELECT permission FROM user WHERE username="{user}" """).fetchone()
-                    print(perm_allowed)
-                    """perm_allowed = str(perm_allowed).replace("[", '')
-                    perm_allowed = perm_allowed.replace("(", '')
-                    perm_allowed = perm_allowed.replace(")", '')
-                    perm_allowed = perm_allowed.replace(")", '')
-                    perm_allowed = perm_allowed.replace("'", '')
-                    perm_allowed = perm_allowed.replace(",", '')
-                    perm_allowed = perm_allowed"""
+                    print(perm_allowed) 
 
                     resp = make_response(redirect("/"))
                     resp.set_cookie("username", user)
