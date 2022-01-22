@@ -133,7 +133,9 @@ def login():
             return "Merci de remplir tout les champs"
 
         password = hash_perso(passw)
-        check_user = cur.execute(f"""SELECT * FROM user WHERE username="{user}" """)
+        req = """SELECT * FROM user WHERE username=?"""
+        data = (str(user),)
+        check_user = cur.execute("SELECT * FROM user WHERE username=?", (user,))
 
         row = check_user.fetchone()
 
