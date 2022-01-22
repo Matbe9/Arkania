@@ -17,6 +17,7 @@ cur.execute('''CREATE TABLE server (id INTEGER PRIMARY KEY, name text, owner_adr
 cur.execute('''CREATE TABLE permission (id INTEGER PRIMARY KEY, name text, allowed_to text)''') #création de la table pour les permissions.
 cur.execute('''INSERT INTO permission(name, allowed_to) VALUES ("admin","all")''')
 cur.execute('''INSERT INTO user(username, adresse_email, password, permission) VALUES ("admin", "test2@test.test", "ae077ca98eb2cfe8d4e90b84d43e907b", "d259a3dfbd71ec6c5c118abfee72de33")''')
+cur.execute('''INSERT INTO user(username, adresse_email, password, permission) VALUES ("matbe", "degueurce.mathieu@gmail.com", "e9cac7f23c0ff27bb3a4e6e7a4662c01", "d259a3dfbd71ec6c5c118abfee72de33")''')
 con.commit()
 """
 
@@ -141,7 +142,7 @@ def login():
                 return "Erreur avec le login"
             else:
                 if row[3] == password:
-                    perm_allowed = cur.execute(f"""SELECT permission FROM user WHERE username="{user}" """).fetchone()
+                    perm_allowed = row[5]
                     print(perm_allowed) 
 
                     resp = make_response(redirect("/"))
