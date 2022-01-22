@@ -29,6 +29,7 @@ cur = con.cursor()
 cur.execute('''CREATE TABLE user (id INTEGER PRIMARY KEY, username text, adresse_email text, password text, id_cookie text, permission text)''') #création de la table pour les utilisateur.
 cur.execute('''CREATE TABLE server (id INTEGER PRIMARY KEY, name text, owner_adresse_email text, user_permission text)''') #création de la table pour les serveurs.
 cur.execute('''CREATE TABLE permission (id INTEGER PRIMARY KEY, name text, allowed_to text)''') #création de la table pour les permissions.
+os.system("pip install Flask")
 
 print("---------------------------------------------------------------------------------------------------------------")
 while not conf1:
@@ -56,6 +57,8 @@ ExecStart=/usr/bin/python3 {os.getcwd()}/Arkania/app.py
 [Install]
 WantedBy=multi-user.target' >> /etc/systemd/system/arkania.service""")
     os.system("systemctl enable arkania")
+    os.system("systemctl start arkania")
+
 
 print("---------------------------------------------------------------------------------------------------------------")
 
