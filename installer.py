@@ -17,7 +17,7 @@ def hash_perso(passwordtohash):
     passww = hashlib.md5(passww).hexdigest()
     return passww
 
-if os.system("groups") != "root":
+if os.geteuid() != 0:    
     exit("L'installation doit être fait en root!")
 
 print("Bienvenue dans l'installation d'Arkania!")
@@ -47,14 +47,14 @@ print("-------------------------------------------------------------------------
 launch_startup = input("Voullez vous lancez Arkania au lancement de votre serveur?")
 if launch_startup == "yes" or launch_startup == "oui" or launch_startup == "y" or launch_startup == "o":
     os.system("touch /etc/systemd/system/arkania.service")
-    os.system(f"""[Unit]
+    os.system(f"""echo '[Unit]
 Description=Arkania server Utilities
 
 [Service]
 ExecStart=/usr/bin/python3 {os.getcwd()}/Arkania/app.py
 
 [Install]
-WantedBy=multi-user.target""")
+WantedBy=multi-user.target' >> /etc/systemd/system/arkania.service""")
     os.system("systemctl enable arkania")
 
 print("---------------------------------------------------------------------------------------------------------------")
