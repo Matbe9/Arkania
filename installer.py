@@ -61,5 +61,5 @@ WantedBy=multi-user.target' >> /etc/systemd/system/arkania.service""")
 
 
 print("---------------------------------------------------------------------------------------------------------------")
-
+os.system("rm ./Arkania/installer.py")
 print("Nous venons de finir l'instalation d'Arkania! Vous pouvez maintenant sur https://127.0.0.1:5000/  pour pouvoir continuer l'installation d'Arkania")
