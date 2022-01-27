@@ -61,6 +61,7 @@ def admin_index():
         return render_template("admin/admin_index.html", cur=cur, str=str)
     return redirect("/")
 
+
 @app.route("/admin/add_user")
 def add_user_page():
     if request.cookies.get("login") == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
@@ -68,20 +69,21 @@ def add_user_page():
 
     return redirect("/")
 
-@app.route("/admin/show_user")
-def show_user():
+
+@app.route("/admin/show_user/")
+@app.route("/admin/show_user/<user>")
+def show_user(user=None):
     if request.cookies.get("login") == "True"  and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
-        return render_template("admin/show_user.html", cur=cur)
+        return render_template("admin/show_user.html", cur=cur, user=user)
 
     return redirect("/")
-
 
 
 @app.route("/admin/show_server")
 def admin_show_server():
     if request.cookies.get("login") == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
         return redirect("/admin/")
-        #return render_template("show_server.html", cur=cur)
+        # return render_template("show_server.html", cur=cur)
 
     return redirect("/")
 
@@ -90,7 +92,7 @@ def admin_show_server():
 def delete_user():
     if request.cookies.get("login") == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
         return redirect("/admin/")
-        #return render_template("show_server.html", cur=cur)
+        # return render_template("show_server.html", cur=cur)
 
     return redirect("/")
 
@@ -98,30 +100,35 @@ def delete_user():
 ###                                                  A.P.I                                                           ###
 ########################################################################################################################
 
+
 @app.route("/api/v1/delete_user/<username_to_delete>")
 def delete_user_api(username_to_delete):
     """Cette endpoint est à utiliser avec les valeurs dans l'url."""
     if request.cookies.get("login") == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33" and username_to_delete is not False:
-        sql = "DELETE FROM user WHERE username = ?"
-        cur.execute(sql, (escape(username_to_delete),))
+        cur.execute("DELETE FROM user WHERE username = ?", (escape(username_to_delete),))
         con.commit()
+        resp = make_response(redirect("/admin/show_user"))
+        # return f"L'utilisateur {username_to_delete} a bien été supprimé!"
+        return resp
 
-@app.route("/api/v1/add_server", methods=["POST"])
+
+@app.route("/api/v1/admin/add_server", methods=["POST"])
 def add_server():
     if request.cookies.get("login") == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
         if request.method == 'POST':
             user = request.form['nm']
             mail = request.form['em']
-            passw = request.form['pw']
-            permi = request.form['pm']
+            # passw = request.form['pw']
+            # permi = request.form['pm']
 
-            passw = hash_perso(passw)
+            # passw = hash_perso(passw)
             # ici création de l'utilisateur avec l'input user
-            cur.execute('''INSERT INTO server(name, owner_adresse_email) VALUES (%s, %s)''', user, mail)
+            cur.execute('''INSERT INTO server(name, owner_adresse_email) VALUES (?, ?)''', (user, mail))
             con.commit()
             return "C'est bon"
 
     return redirect("/")
+
 
 @app.route('/api/v1/login', methods=['POST'])
 def login():
@@ -133,8 +140,6 @@ def login():
             return "Merci de remplir tout les champs"
 
         password = hash_perso(passw)
-        req = """SELECT * FROM user WHERE username=?"""
-        data = (str(user),)
         check_user = cur.execute("SELECT * FROM user WHERE username=?", (user,))
 
         row = check_user.fetchone()
@@ -158,24 +163,26 @@ def login():
     else:
         return "ERROR"
 
-@app.route("/admin/add_user_exec", methods=['POST'])
+
+@app.route("/api/v1/admin/add_user", methods=['POST'])
 def add_user_exec():
     if request.cookies.get("login") == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
         if request.method == 'POST':
             user = request.form['nm']
             mail = request.form['em']
             passw = request.form['pw']
-            permi = request.form['pm']
+            # permi = request.form['pm']
 
             passw = hash_perso(passw)
             # ici création de l'utilisateur avec l'input user
-            cur.execute(f'''INSERT INTO user(username, adresse_email, password, permission) VALUES (%s, %s, %s, "d259a3dfbd71ec6c5c118abfee72de33")''',(user, mail, passw))
+            cur.execute(f'''INSERT INTO user(username, adresse_email, password, permission) VALUES (?, ?, ?, "d259a3dfbd71ec6c5c118abfee72de33")''', (user, mail, passw))
             con.commit()
             return "C'est bon"
         else:
             return "C'est pas bon"
 
     return redirect("/")
+
 
 if __name__ == '__main__':
     app.run()

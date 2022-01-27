@@ -5,8 +5,16 @@
     <title>show user</title>
 </head>
 <body>
-    {%  for row in cur.execute('''SELECT * FROM user ORDER BY id''') %}
-        {{ row }}<br>
-    {% endfor %}
+    {% if name %}
+        {% if user.type == int %}
+            {%  for row in cur.execute('''SELECT * FROM user WHERE id=''') %}
+                {{ row[1] }}<br>
+            {% endfor %}
+        {% endif %}
+    {% else %}
+        {%  for row in cur.execute('''SELECT * FROM user ORDER BY id''') %}
+                {{ row[1] }}<br>
+        {% endfor %}
+    {% endif %}
 </body>
 </html>
