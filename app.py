@@ -9,7 +9,7 @@ con = sqlite3.connect('./database.db', check_same_thread=False)
 cur = con.cursor()
 
 """Attention! Ces lignes détruise la base de donné!"""
-""""
+"""
 cur.execute('''DROP TABLE user''')
 cur.execute('''DROP TABLE server''')
 cur.execute('''CREATE TABLE user (id INTEGER PRIMARY KEY, username text, adresse_email text, password text, id_cookie text, permission text)''') #création de la table pour les utilisateur.
