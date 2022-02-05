@@ -65,7 +65,7 @@ def admin():
 @app.route("/admin/index")
 def index_admin():
     if request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
-        return render_template("admin/admin_index.html", cur=cur, str=str)
+        return render_template("admin/index.html", cur=cur, str=str)
 
 
 @app.route("/admin/add_user")
