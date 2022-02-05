@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>show user</title>
+</head>
+<body>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Nom</th>
+            <th>Addresse mail</th>
+            <th>Permission</th>
+        </tr>
+        {% for user in cur.execute('''SELECT username FROM user ORDER BY id''')  %}
+            <tr>
+                <td>{{ user[loop.index0] }}</td>
+                <td>{{ user[loop.first] }}</td>
+                <td>{{ user[loop.nextitem] }}</td>
+                <td>{{ user[loop.last] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
