@@ -80,7 +80,11 @@ def add_user_page():
 @app.route("/admin/show_user/<user>")
 def show_user(user=None):
     if request.cookies.get("login") == "True"  and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
-        return render_template("admin/show_user.html", cur=cur, user=user)
+        if user:
+            print("iSfhgn jsgb")
+            return render_template("admin/show_user.html", cur=cur, user=user)
+
+        return render_template("admin/show_all_user.html", cur=cur)
 
     return redirect("/")
 

@@ -38,11 +38,10 @@ while not conf1:
     email = input("    Adresse e-mail: ")
 
     mdp1 = input("    Mot de passe: ")
-    mdp2 = input("    Confirmation du mot de passe: ")
     confirm = input("Confirmez vous les données ci-dessus? ")
     if confirm == "yes" or confirm == "oui" or confirm == "y" or confirm == "o":
         conf1 = True
-        cur.execute(f'''INSERT INTO user(username, adresse_email, password, permission) VALUES ("{username}", "{email}", "{hash_perso(mdp2)}", "d259a3dfbd71ec6c5c118abfee72de33")''')
+        cur.execute(f'''INSERT INTO user(username, adresse_email, password, permission) VALUES (?, ?, ?, "d259a3dfbd71ec6c5c118abfee72de33")''', [username, email, hash_perso(mdp1)])
 print("---------------------------------------------------------------------------------------------------------------")
 
 launch_startup = input("Voullez vous lancez Arkania au lancement de votre serveur?")

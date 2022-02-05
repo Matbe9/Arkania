@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>show user</title>
+</head>
+<body>
+    {%  for row in cur.execute('''SELECT * FROM user WHERE username=?''', [user]) %}
+        {{ row[0] }}<br>
+        {{ row[1] }}<br>
+        {{ row[2] }}<br>
+        {{ row[3] }}<br>
+        {{ row[4] }}<br>
+        {% if row[5] == "d259a3dfbd71ec6c5c118abfee72de33" %}
+            Admin
+        {% elif row[5] == "ae077ca98eb2cfe8d4e90b84d43e907b" %}
+            Customer
+        {% endif %}
+    {% endfor %}
+</body>
+</html>
