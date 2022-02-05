@@ -39,9 +39,10 @@ def hash_perso(passwordtohash):
 @app.route('/')
 def home():  # put application's code here
     if request.cookies.get('login') == "True":
+        if request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
+            return redirect("/admin/index")
         return render_template("index.html", cur=cur, str=str)
-    elif request.cookies.get('login') == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
-        return redirect("/admin/")
+
     else:
         return render_template("login.html")
 
@@ -56,10 +57,15 @@ def logout():
 
 
 @app.route("/admin/")
-def admin_index():
+def admin():
     if request.cookies.get("login") == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
-        return render_template("admin/admin_index.html", cur=cur, str=str)
+        return redirect("/admin/index")
     return redirect("/")
+
+@app.route("/admin/index")
+def index_admin():
+    if request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
+        return render_template("admin/admin_index.html", cur=cur, str=str)
 
 
 @app.route("/admin/add_user")
@@ -155,7 +161,7 @@ def login():
                     resp = make_response(redirect("/"))
                     resp.set_cookie("username", user)
                     resp.set_cookie("login", "True")
-                    resp.set_cookie("permission", f"{perm_allowed}")
+                    resp.set_cookie("permission", perm_allowed)
                     return resp
                 else:
                     return "Mauvais mot de passe"

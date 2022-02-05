@@ -4,7 +4,6 @@ Un outil qui permettra d'administrer son serveur
 
 Fait en python, HTML, CSS (pas encore) avec Flask
 
-
 # Installation
 
 - Sur votre système télécharger [l'installeur](https://raw.githubusercontent.com/Matbe9/Arkania/master/installer.py). 
