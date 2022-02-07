@@ -45,9 +45,8 @@ while not conf1:
 print("---------------------------------------------------------------------------------------------------------------")
 
 launch_startup = input("Voullez vous lancez Arkania au lancement de votre serveur?")
-if launch_startup == "yes" or launch_startup == "oui" or launch_startup == "y" or launch_startup == "o":
-    os.system("touch /etc/systemd/system/arkania.service")
-    os.system(f"""echo '[Unit]
+os.system("touch /etc/systemd/system/arkania.service")
+os.system(f"""echo '[Unit]
 Description=Arkania server Utilities
 
 [Service]
@@ -55,8 +54,10 @@ ExecStart=/usr/bin/python3 {os.getcwd()}/Arkania/app.py
 
 [Install]
 WantedBy=multi-user.target' >> /etc/systemd/system/arkania.service""")
+if launch_startup == "yes" or launch_startup == "oui" or launch_startup == "y" or launch_startup == "o":
     os.system("systemctl enable arkania")
-    os.system("systemctl start arkania")
+
+os.system("systemctl start arkania")
 
 
 print("---------------------------------------------------------------------------------------------------------------")

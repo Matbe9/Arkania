@@ -62,6 +62,7 @@ def admin():
         return redirect("/admin/index")
     return redirect("/")
 
+
 @app.route("/admin/index")
 def index_admin():
     if request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
@@ -79,7 +80,7 @@ def add_user_page():
 @app.route("/admin/show_user/")
 @app.route("/admin/show_user/<user>")
 def show_user(user=None):
-    if request.cookies.get("login") == "True"  and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
+    if request.cookies.get("login") == "True" and request.cookies.get("permission") == "d259a3dfbd71ec6c5c118abfee72de33":
         if user:
             print("iSfhgn jsgb")
             return render_template("admin/show_user.html", cur=cur, user=user)
@@ -181,10 +182,11 @@ def add_user_exec():
             user = request.form['nm']
             mail = request.form['em']
             passw = request.form['pw']
-            # permi = request.form['pm']
+            permi = request.form['pm']
+            if permi != cur.execute('''SELECT permission FROM user WHERE username=?''', [permi]):
+                pass
 
             passw = hash_perso(passw)
-            # ici création de l'utilisateur avec l'input user
             cur.execute(f'''INSERT INTO user(username, adresse_email, password, permission) VALUES (?, ?, ?, "d259a3dfbd71ec6c5c118abfee72de33")''', (user, mail, passw))
             con.commit()
             return "C'est bon"

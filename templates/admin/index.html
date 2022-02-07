@@ -12,12 +12,7 @@
     <h1>Hello {{ request.cookies.get('username') }}</h1>
 
     {%  for user in cur.execute('''SELECT username FROM user ORDER BY id''') %}
-        {% set user = str(user) %}
-        {% set user = str(user).replace("(", '') %}
-        {% set user = user.replace(")", '') %}
-        {% set user = user.replace("'", '') %}
-        {% set user = user.replace(",", '') %}
-        <a>{{ user }}</a><br>
+        <li><a href=f"127.0.0.1:5000/admin/show_user/{user[1}">{{ user[1] }}</a></li><br>
     {% endfor %}
 </body>
 </html>
